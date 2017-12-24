@@ -3,8 +3,12 @@
 /////
 // this script will live on your web host on a server that you can access anywehere
 
-require('config.php');
-
+if (file_exists('my_config.php')){
+	require('my_config.php'); // if you'd like to keep personal settings apart from the defaults
+  } else {
+	require('config.php');
+  }
+  
 function write_torrent_url_to_queue($url){
 	$queue_file = QUEUE_FILE_NAME;
 	$result = file_put_contents($queue_file, $url."\n", FILE_APPEND);
@@ -72,6 +76,17 @@ function search_leetx($search){
 	}
 
 	return $search_results_array;
+}
+
+$action = $_REQUEST['action'];
+$pass = $_REQUEST['pass'];
+
+if ($pass != PASSWORD){
+	die();
+}
+
+if ($action == 'reset_queue'){
+	file_put_contents(QUEUE_FILE_NAME, '');
 }
 
 if ($action == 'search'){

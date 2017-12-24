@@ -4,7 +4,13 @@
 // this script will live on your home media server (this server will perform downloads, 
 // likely the same server that runs plex media server for you) 
 
-require('config.php');
+//error_reporting(E_ALL); ini_set('display_errors', '1');
+
+if (file_exists('my_config.php')){
+  require('my_config.php'); // if you'd like to keep personal settings apart from the defaults
+} else {
+  require('config.php');
+}
 
 function parse_queue(){
 	$queue_file = QUEUE_FILE_WEB_ADDRESS;
@@ -15,8 +21,12 @@ function parse_queue(){
 		if ($url){
 			add_torrent_url($url);
 		}
-	}
-	$result = file_put_contents($queue_file, '');
+  }
+  
+  sleep(5);
+
+  // reset remote download queue
+  $result = file_get_contents(QUEUE_RESET_WEB_ADDRESS);
 }
 
 function add_torrent_url($magnet_url){
@@ -48,9 +58,13 @@ function add_torrent_url($magnet_url){
 
   if (TORRENT_CLIENT == 'transmission'){
     // transmission-cli magnet:?xt=urn:btih:e249fe4dc957be4b4ce3ecaac280fdf1c71bc5bb&dn=ubuntu-mate-16.10-desktop-amd64.iso -w ~/Downloads
-    $result = system('transmission-cli ' . $magnet_url . ' -w ' . $save_path, $retval);
+    $system_cmd = TRANSMISSION_BIN_PATH . ' ' . TRANSMISSION_AUTH . ' -a "' . $magnet_url . '"';
+    
+    $result = system($system_cmd, $retval);
   }
 }
+
+$action = $_REQUEST['action'];
 
 if ($action == 'parse_queue'){
 	echo 'parsing download queue, then deleting';
