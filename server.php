@@ -3,6 +3,8 @@
 /////
 // this script will live on your web host on a server that you can access anywehere
 
+session_start();
+
 if (file_exists('my_config.php')){
 	require('my_config.php'); // if you'd like to keep personal settings apart from the defaults
   } else {
@@ -79,10 +81,18 @@ function search_leetx($search){
 }
 
 $action = $_REQUEST['action'];
-$pass = $_REQUEST['pass'];
+
+if ($_SESSION['pass']){
+	$pass = $_SESSION['pass'];
+} else {
+	$pass = $_REQUEST['pass'];
+}
 
 if ($pass != PASSWORD){
+	$_SESSION['pass'] = '';
 	die();
+} else {
+	$_SESSION['pass'] = $pass;
 }
 
 if ($action == 'reset_queue'){
