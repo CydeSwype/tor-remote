@@ -58,7 +58,7 @@ function add_torrent_url($magnet_url){
 
   if (TORRENT_CLIENT == 'transmission'){
     // transmission-cli magnet:?xt=urn:btih:e249fe4dc957be4b4ce3ecaac280fdf1c71bc5bb&dn=ubuntu-mate-16.10-desktop-amd64.iso -w ~/Downloads
-    $system_cmd = TRANSMISSION_BIN_PATH . ' ' . TRANSMISSION_AUTH . ' -a "' . $magnet_url . '"';
+    $system_cmd = TRANSMISSION_BIN_PATH . ' ' . TRANSMISSION_AUTH . ' -a "' . $magnet_url . '" -w "' . SAVE_PATH . '"';
     
     $result = system($system_cmd, $retval);
   }
