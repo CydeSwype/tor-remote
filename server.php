@@ -87,6 +87,7 @@ if ($pass != PASSWORD){
 
 if ($action == 'reset_queue'){
 	file_put_contents(QUEUE_FILE_NAME, '');
+	echo 'queue reset';
 }
 
 if ($action == 'search'){
