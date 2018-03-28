@@ -15,18 +15,30 @@ if (file_exists('my_config.php')){
 function parse_queue(){
 	$queue_file = QUEUE_FILE_WEB_ADDRESS;
 	$result = file_get_contents($queue_file);
-	$urls = explode("\n", $result);
+	echo "<textarea style=\"font-size:12px; width:100%; height:200px\">$result</textarea>";
 
-	foreach ($urls as $url){
-		if ($url){
-			add_torrent_url($url);
+	// store the queue file in local cache in case server becomes unavailable and we're not successful in adding to torrent client (i.e. if the client isn't running)
+	if (!$result) {
+		// if we can't get the remote queue file, try getting the local cached queue instead
+		$result = file_get_contents('cache.txt');
+	}
+	if ($result) {
+		echo "storing in local cache, in case adding to torrent client fails and we need to retry later<br/>";
+		file_put_contents('cache.txt', $result);
+
+		$urls = explode("\n", $result);
+
+		foreach ($urls as $url){
+			if ($url){
+				add_torrent_url($url);
+			}
 		}
-  }
   
-  sleep(5);
+		sleep(5);
 
-  // reset remote download queue
-  $result = file_get_contents(QUEUE_RESET_WEB_ADDRESS);
+		// reset remote download queue
+		$result = file_get_contents(QUEUE_RESET_WEB_ADDRESS);
+	}
 }
 
 function add_torrent_url($magnet_url){
@@ -62,6 +74,14 @@ function add_torrent_url($magnet_url){
     
     $result = system($system_cmd, $retval);
   }
+
+	// if we get any result, let's assume we were successful in adding the torrent to the client, so now we can kill the cache
+	if (file_exists('cache.txt') && $result){
+		unlink('cache.txt');
+		echo "adding file to torrent client successful, deleting local cache<br/>";
+	} elseif (!$result){
+		echo "adding file to torrent client unsuccessful<br/>";
+	}
 }
 
 $action = $_REQUEST['action'];
