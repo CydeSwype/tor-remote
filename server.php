@@ -40,47 +40,49 @@ function get_between($start, $end, $str){
 }
 
 function search_leetx($search){
-	$url = 'http://1337x.to/search/' . urlencode($search) . '/1/';
-	$result = file_get_contents($url);
+        $url = 'http://1337x.to/search/' . urlencode($search) . '/1/';
+        $result = file_get_contents($url);
 
-	$result = strstr($result, '"box-info-detail');
+        $result = strstr($result, '"box-info-detail');
 
-	$result_array = explode('<tr>', $result);
-	$i = 0;
+        $result_array = explode('<tr>', $result);
+        $i = 0;
 
-	foreach ($result_array as $row){
-		// get the detail page url
-		$temp = explode('<a href="', $row);
-		$temp = explode('">', $temp[2]);
-		@$search_results_array[$i]->asset_detail_url = $temp[0];
+        foreach ($result_array as $row){
+                // get the detail page url
+                $temp = explode('<a href="', $row);
+                $temp = explode('">', $temp[2]);
+                @$search_results_array[$i]->asset_detail_url = $temp[0];
 
-		// get the seeder count
-		$temp = get_between('<td class="coll-2 seeds">', '</td>', $row);
-		$search_results_array[$i]->seed_count = strip_tags($temp);
+                // get the seeder count
+                $temp = get_between('<td class="coll-2 seeds">', '</td>', $row);
+                $search_results_array[$i]->seed_count = strip_tags($temp);
 
-		// get the leecher count
-		$temp = get_between('<td class="coll-3 leeches">', '</td>', $row);
-		$search_results_array[$i]->leech_count = strip_tags($temp);
+                // get the leecher count
+                $temp = get_between('<td class="coll-3 leeches">', '</td>', $row);
+                $search_results_array[$i]->leech_count = strip_tags($temp);
 
-		// get the filesize
-		$temp = get_between('<td class="coll-4 size mob-vip">', '<span', $row);
-		if ($temp == ''){
-			$temp = get_between('<td class="coll-4 size mob-user">', '<span', $row);			
-		}
-		if ($temp == ''){
-			$temp = get_between('<td class="coll-4 size mob-uploader">', '<span', $row);			
-		}
-		$search_results_array[$i]->file_size = strip_tags($temp);
+                // get the filesize
+                $temp = get_between('<td class="coll-4 size mob-vip">', '<span', $row);
+                if ($temp == ''){
+                        $temp = get_between('<td class="coll-4 size mob-user">', '<span', $row);
+                }
+                if ($temp == ''){
+                        $temp = get_between('<td class="coll-4 size mob-uploader">', '<span', $row);
+                }
+                $search_results_array[$i]->file_size = strip_tags($temp);
 
-		if ($search_results_array[$i]->asset_detail_url){
-			$i++;
-		}
-	}
+                if ($search_results_array[$i]->asset_detail_url){
+                        $i++;
+                }
+        }
 
 	return $search_results_array;
 }
 
 $action = $_REQUEST['action'];
+$search = $_REQUEST['search'];
+$asset_detail_url = $_REQUEST['asset_detail_url'];
 
 if ($_SESSION['pass']){
 	$pass = $_SESSION['pass'];
