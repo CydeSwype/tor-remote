@@ -6,7 +6,7 @@ define('TORRENT_CLIENT', 'transmission'); // Currently supports qbtorrent or tra
 define('SAVE_PATH', '/Volumes/videos/movies');
 
 define('QUEUE_FILE_NAME', 'queue.txt');
-define('QUEUE_RESET_WEB_ADDRESS', 'http://foo.com/tor_remote/server.php?pass=' . PASSWORD);
+define('QUEUE_RESET_WEB_ADDRESS', 'http://foo.com/tor_remote/server.php?pass=' . PASSWORD. '&action=reset_queue');
 define('QUEUE_FILE_WEB_ADDRESS', 'http://foo.com/tor_remote/' . QUEUE_FILE_NAME);
 
 // if using transmission as torrent client
